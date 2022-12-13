@@ -2,17 +2,17 @@
     "name": "Nommages des livrables",
     "description": "Changer mettre le nom et date pour les livrables sur la plateforme OpenClassrooms",
     "version": "1.0.0",
-    "manifest_version": 2,
-    "permissions": [
-        "Nommage-de-livrables"
-    ],
+    "manifest_version": 3,
     "icons": {
         "16": "images/Logo_deliverables-16.png",
-        "32": "images/Logo_deliverables.png",
-        "48": "images/Logo_deliverables.png",
+        "48": "images/Logo_deliverables-48.png",
         "128": "images/Logo_deliverables-128.png"
     },
     "options_page": "html/options.html",
+    "action": {
+        "default_icon": "images/Logo_deliverables-16.png",
+        "default_popup": "html/pop-up.html"
+    },
     "content_scripts": [
         {
             "js": [
