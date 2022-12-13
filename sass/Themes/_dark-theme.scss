@@ -5,5 +5,7 @@
     $body-bg-color: black;
 
     //CSS variables
-    :root {}
+    :root {
+        --body-bg-color:#{$body-bg-color};
+    }
 }
