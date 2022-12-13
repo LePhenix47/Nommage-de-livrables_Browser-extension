@@ -26,7 +26,9 @@ function getInnerText(HTMLElement) {
 
 function setDeliverablesName(timeout) {
   setTimeout(() => {
-    const unorderedList = document.querySelector("aside > ul");
+    const unorderedList = document.querySelector(
+      `aside[data-claire-semantic="information"] > ul`
+    );
 
     if (!unorderedList) {
       console.log(
@@ -37,14 +39,13 @@ function setDeliverablesName(timeout) {
       return setDeliverablesName(newTimeout);
     }
     const listItems = Array.from(unorderedList.children);
-
     /*
       const unorderedList = document.querySelector("aside > ul");
       const listItems = Array.from(unorderedList.children);
     */
 
     console.log(
-      "%cThe script worked!",
+      "%cThe script is working",
       "padding:5px; font-size: 24px; background: green; color:white;"
     );
 
@@ -88,8 +89,7 @@ function setDeliverablesName(timeout) {
 
     for (let i = 0; i < listItems.length; i++) {
       const item = listItems[i];
-      item.classList.add("italic");
-      console.log({ nameOfStudent }, item.textContent);
+      item.setAttribute("style", "font-style: italic");
 
       item.textContent = replaceText(
         item.textContent,
@@ -98,9 +98,14 @@ function setDeliverablesName(timeout) {
       );
       item.textContent = replaceText(item.textContent, "mmaaaa", newDate);
     }
+    console.log(
+      "%cThe script worked!",
+      "padding:5px; font-size: 24px; background: green; color:white;"
+    );
   }, timeout);
 }
 
 let currentTimeout = 2_500; //In milliseconds
 
 setDeliverablesName(currentTimeout);
+window.addEventListener("", () => {});
