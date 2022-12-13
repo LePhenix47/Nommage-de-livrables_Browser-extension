@@ -5,7 +5,7 @@ console.log(
 
 function getDate() {
   const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth();
+  const currentMonth = new Date().getMonth() + 1;
 
   const date = `${currentMonth}${currentYear}`;
 
