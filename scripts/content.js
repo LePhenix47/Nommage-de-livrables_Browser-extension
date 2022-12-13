@@ -24,6 +24,20 @@ function getInnerText(HTMLElement) {
   return HTMLElement.innerText;
 }
 
+function formatText(string, typeOfFormatting) {
+  switch (typeOfFormatting.toLowerCase()) {
+    case "lowercase": {
+      return string.toLowerCase();
+    }
+    case "uppercase": {
+      return string.toUpperCase();
+    }
+    case "titlecase": {
+      return string.substring(0, 1).toUpperCase() + string.substring(1);
+    }
+  }
+}
+
 function setDeliverablesName(timeout) {
   setTimeout(() => {
     const unorderedList = document.querySelector(
@@ -58,7 +72,7 @@ function setDeliverablesName(timeout) {
         "%cThe script DID NOT work, couldn't retrieve the title of the project! Calling the function back again in 100ms",
         "padding:5px; font-size: 24px; background-color: red; color:white;"
       );
-      let newTimeout = 100; //The timeout is always in milliseconds
+      let newTimeout = 500; //The timeout is always in milliseconds
       return setDeliverablesName(newTimeout);
     }
     mainHeadingText = replaceText(mainHeadingText, " ", "_");
@@ -74,7 +88,10 @@ function setDeliverablesName(timeout) {
     let nameOfStudent = getInnerText(nameOfStudentElement);
     nameOfStudent = replaceText(nameOfStudent, " ", "_");
 
-    const actualTitleOfProject = `${mainHeadingText}_${nameOfStudent.toLowerCase()}`;
+    const actualTitleOfProject = `${formatText(
+      mainHeadingText,
+      "titlecase"
+    )}_${formatText(nameOfStudent, "lowercase")}`;
     titleOfProjectInAsideElement.textContent = replaceText(
       textOfAside,
       textOfAside,
@@ -85,7 +102,7 @@ function setDeliverablesName(timeout) {
 
     setTimeout(() => {
       button.click(); //We click it again to close it
-    }, 10);
+    }, 0);
 
     for (let i = 0; i < listItems.length; i++) {
       const item = listItems[i];
@@ -105,7 +122,6 @@ function setDeliverablesName(timeout) {
   }, timeout);
 }
 
-let currentTimeout = 2_500; //In milliseconds
+let currentTimeout = 3_000; //In milliseconds
 
 setDeliverablesName(currentTimeout);
-window.addEventListener("", () => {});
