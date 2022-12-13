@@ -33,7 +33,9 @@ function formatText(string, typeOfFormatting) {
       return string.toUpperCase();
     }
     case "titlecase": {
-      return string.substring(0, 1).toUpperCase() + string.substring(1);
+      return (
+        string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase()
+      );
     }
   }
 }
