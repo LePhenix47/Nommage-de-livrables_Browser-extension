@@ -3,6 +3,15 @@ console.log(
   "padding:5px; font-size: 24px; background-color: darkblue; color:white;"
 );
 
+function getDate() {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+
+  const date = `${currentMonth}${currentYear}`;
+
+  return date;
+}
+
 function replaceText(stringOfText, textToBeReplaced, textToReplaceBy) {
   return stringOfText.replaceAll(textToBeReplaced, textToReplaceBy);
 }
@@ -28,6 +37,11 @@ function setDeliverablesName(timeout) {
       return setDeliverablesName(newTimeout);
     }
     const listItems = Array.from(unorderedList.children);
+
+    /*
+      const unorderedList = document.querySelector("aside > ul");
+      const listItems = Array.from(unorderedList.children);
+    */
 
     console.log(
       "%cThe script worked!",
@@ -66,9 +80,7 @@ function setDeliverablesName(timeout) {
       actualTitleOfProject
     );
 
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth();
-    const newDate = `${currentMonth}${currentYear}`;
+    const newDate = getDate();
 
     setTimeout(() => {
       button.click(); //We click it again to close it
@@ -76,23 +88,15 @@ function setDeliverablesName(timeout) {
 
     for (let i = 0; i < listItems.length; i++) {
       const item = listItems[i];
-      const emphaseNameOfItem = item.children[0];
-      const textOfName = getInnerText(emphaseNameOfItem);
+      item.classList.add("italic");
+      console.log({ nameOfStudent }, item.textContent);
 
-      const emphaseDateOfItem = item.children[1];
-      const textOfDate = getInnerText(emphaseDateOfItem);
-
-      emphaseNameOfItem.textContent = replaceText(
-        textOfName,
+      item.textContent = replaceText(
+        item.textContent,
         "Nom_Prénom",
         nameOfStudent
       );
-
-      emphaseDateOfItem.textContent = replaceText(
-        textOfDate,
-        "mmaaaa",
-        newDate
-      );
+      item.textContent = replaceText(item.textContent, "mmaaaa", newDate);
     }
   }, timeout);
 }
