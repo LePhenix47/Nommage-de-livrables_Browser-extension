@@ -1,0 +1,7 @@
+    //SASS variables
+    $body-bg-color: white;
+
+    //CSS variables
+    :root {
+        --body-bg-color:#{$body-bg-color};
+    }

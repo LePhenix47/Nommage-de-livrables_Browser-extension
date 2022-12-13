@@ -1,0 +1,37 @@
+//Given the fact that @import is deprecated → must use @use and @forward instead
+@use "../Utils/" as *;
+
+//Removes ANY animation if the user has the reduced motion option enabled in their device
+@media (prefers-reduced-motion) {
+
+    *,
+    :before,
+    ::after {
+        -webkit-animation: none !important;
+        animation: none !important;
+
+        -webkit-transition: none !important;
+        transition: none !important;
+    }
+}
+
+*,
+::before,
+::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-color: var(--body-bg-color);
+    transition: background-color 350ms ease-out,
+        color 350ms ease-out;
+}

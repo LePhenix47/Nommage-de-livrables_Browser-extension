@@ -1,0 +1,9 @@
+@use "../Utils/" as *;
+
+@media (prefers-color-scheme: dark) {
+    //SASS variables
+    $body-bg-color: black;
+
+    //CSS variables
+    :root {}
+}
