@@ -1,13 +1,13 @@
 {
-  "name": "extension-test",
+  "name": "nommage-des-livrables",
   "version": "1.0.0",
-  "description": "",
+  "description": "This JSON file contains the script for SASS",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "sass": "sass --watch ./sass/main.scss:./css/style.css --style compressed"
   },
-  "author": "",
+  "author": "Younes Lahouiti",
   "license": "ISC",
   "dependencies": {
     "sass": "^1.56.2"
