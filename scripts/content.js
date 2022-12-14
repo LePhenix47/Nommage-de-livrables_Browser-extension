@@ -124,6 +124,6 @@ function setDeliverablesName(timeout) {
   }, timeout);
 }
 
-let currentTimeout = 3_000; //In milliseconds
+let currentTimeout = 3000; //In milliseconds
 
 setDeliverablesName(currentTimeout);
