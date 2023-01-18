@@ -73,6 +73,7 @@ function verifyUrl() {
   if (!rightPage) {
     return setDeliverablesName(currentTimeout);
   }
+  return;
 }
 verifyUrl();
 
