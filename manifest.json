@@ -20,7 +20,9 @@
             ],
             "matches": [
                 "https://openclassrooms.com/fr/paths/*",
-                "https://openclassrooms.com/en/paths/*"
+                "https://openclassrooms.com/en/paths/*",
+                "https://openclassrooms.com/fr/users/*/paths/*",
+                "https://openclassrooms.com/en/users/*/paths/*"
             ]
         }
     ]

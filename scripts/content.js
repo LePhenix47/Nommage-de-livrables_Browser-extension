@@ -7,7 +7,9 @@ function getDate() {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
 
-  const date = `${currentMonth}${currentYear}`;
+  const date = `${
+    currentMonth < 10 ? "0" + currentMonth : currentMonth
+  }${currentYear}`;
 
   return date;
 }
@@ -17,7 +19,7 @@ function replaceText(stringOfText, textToBeReplaced, textToReplaceBy) {
 }
 
 function getInnerText(HTMLElement) {
-  if (!HTMLElement.innerText) {
+  if (!HTMLElement?.innerText) {
     return "";
   }
 
@@ -40,11 +42,54 @@ function formatText(string, typeOfFormatting) {
   }
 }
 
+function getElementsForInfos() {
+  const arrayOfAsides = Array.from(
+    document.querySelectorAll(`aside[data-claire-semantic="information"]`)
+  );
+  let asideForDeliverable = "";
+
+  if (!arrayOfAsides.length > 1) {
+    return console.log("%cMultiple asides dectected");
+  } else {
+    for (let i = 0; i < arrayOfAsides.length; i++) {
+      const aside = arrayOfAsides[i];
+
+      const asideIsForDelivrables = aside.innerText.includes(
+        "Nom_Prénom_n° du livrable_nom du livrable__date de démarrage du projet"
+      );
+      if (asideIsForDelivrables) {
+        asideForDeliverable = aside;
+      }
+    }
+  }
+}
+
+function verifyUrl() {
+  const currentURL = location.pathname;
+
+  const rightPage = currentURL.includes("assignment");
+  console.log({ currentURL });
+
+  if (!rightPage) {
+    return setDeliverablesName(currentTimeout);
+  }
+}
+verifyUrl();
+
+let calls = 0;
 function setDeliverablesName(timeout) {
   setTimeout(() => {
     const unorderedList = document.querySelector(
       `aside[data-claire-semantic="information"] > ul`
     );
+
+    if (calls >= 10) {
+      console.log(
+        "%cMax calling stack exceeded, the script will stop to avoid infinite loops, please reload the page",
+        "padding:5px; font-size: 24px; background-color: red; color:white;"
+      );
+      return;
+    }
 
     if (!unorderedList) {
       console.log(
@@ -52,6 +97,7 @@ function setDeliverablesName(timeout) {
         "padding:5px; font-size: 24px; background-color: red; color:white;"
       );
       let newTimeout = 500; //The timeout is always in milliseconds
+      calls++;
       return setDeliverablesName(newTimeout);
     }
     const listItems = Array.from(unorderedList.children);
@@ -61,8 +107,8 @@ function setDeliverablesName(timeout) {
     */
 
     console.log(
-      "%cThe script is working",
-      "padding:5px; font-size: 24px; background: green; color:white;"
+      "%cThe script is executing",
+      "padding:5px; font-size: 24px; background: blue; color:white;"
     );
 
     const mainHeadingElement = document.querySelector("h1");
@@ -75,6 +121,7 @@ function setDeliverablesName(timeout) {
         "padding:5px; font-size: 24px; background-color: red; color:white;"
       );
       let newTimeout = 500; //The timeout is always in milliseconds
+      calls++;
       return setDeliverablesName(newTimeout);
     }
     mainHeadingText = replaceText(mainHeadingText, " ", "_");
@@ -94,6 +141,7 @@ function setDeliverablesName(timeout) {
       mainHeadingText,
       "titlecase"
     )}_${formatText(nameOfStudent, "lowercase")}`;
+
     titleOfProjectInAsideElement.textContent = replaceText(
       textOfAside,
       textOfAside,
