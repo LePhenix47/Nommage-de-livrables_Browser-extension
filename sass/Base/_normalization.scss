@@ -35,3 +35,11 @@ body {
     transition: background-color 350ms ease-out,
         color 350ms ease-out;
 }
+
+a {
+    text-decoration: none;
+
+    &:visited {
+        color: initial;
+    }
+}
