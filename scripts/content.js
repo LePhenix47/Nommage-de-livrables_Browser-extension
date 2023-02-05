@@ -1,8 +1,24 @@
+/**
+ * `console.log()` but with a simpler syntax
+ *
+ * @param  {...any} messages Dev messages to log to the console
+ * @returns void
+ */
+function log(...messages) {
+  return console.log(messages);
+}
+
 console.log(
   "%cExecuting script...",
   "padding:5px; font-size: 24px; background-color: darkblue; color:white;"
 );
 
+/**
+ * Gets the current date in this format: *mmYYYY*
+ *
+ * ex: `022023`
+ * @returns Date
+ */
 function getDate() {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
@@ -14,10 +30,24 @@ function getDate() {
   return date;
 }
 
+/**
+ * Replaces words or characters of a string with new ones
+ *
+ * @param stringOfText The entire string of text
+ * @param textToBeReplaced Character or word be replaced
+ * @param textToReplaceBy Character or word that will replace
+ * @returns string
+ */
 function replaceText(stringOfText, textToBeReplaced, textToReplaceBy) {
   return stringOfText.replaceAll(textToBeReplaced, textToReplaceBy);
 }
 
+/**
+ * Function that gets the stirng inside an HTML element
+ *
+ * @param HTMLElement An HTML element with text inside
+ * @returns string of the HTML element
+ */
 function getInnerText(HTMLElement) {
   if (!HTMLElement?.innerText) {
     return "";
@@ -26,6 +56,12 @@ function getInnerText(HTMLElement) {
   return HTMLElement.innerText;
 }
 
+/**
+ *
+ * @param string String of chracters to be formatted
+ * @param typeOfFormatting Can be either lowercase, uppercase or titlecase
+ * @returns Formatted string
+ */
 function formatText(string, typeOfFormatting) {
   switch (typeOfFormatting.toLowerCase()) {
     case "lowercase": {
@@ -42,28 +78,38 @@ function formatText(string, typeOfFormatting) {
   }
 }
 
-function getElementsForInfos() {
-  const arrayOfAsides = Array.from(
-    document.querySelectorAll(`aside[data-claire-semantic="information"]`)
-  );
-  let asideForDeliverable = "";
-
-  if (!arrayOfAsides.length > 1) {
-    return console.log("%cMultiple asides dectected");
-  } else {
-    for (let i = 0; i < arrayOfAsides.length; i++) {
-      const aside = arrayOfAsides[i];
-
-      const asideIsForDelivrables = aside.innerText.includes(
-        "Nom_Prénom_n° du livrable_nom du livrable__date de démarrage du projet"
-      );
-      if (asideIsForDelivrables) {
-        asideForDeliverable = aside;
-      }
-    }
+/**
+ * A simplified version of `document.querySelector()`
+ *
+ * @param  query HTML Element to select
+ * @param  container HTML Element to select the query from
+ * @returns The element selected *or* `null` if the element doesn't exist
+ */
+function selectQuery(query, container) {
+  if (!container) {
+    return document.querySelector(query);
   }
+  return container.querySelector(query);
 }
 
+/**
+ * A simplified version of `document.querySelectorAll()`
+ *
+ * @param  query HTML Element to select
+ * @param  container HTML Element to select the query from
+ * @returns An array with all the elements selected *or* `null` if the element doesn't exist
+ */
+function selectQueryAll(query, container) {
+  if (!container) {
+    return Array.from(document.querySelectorAll(query));
+  }
+  return Array.from(container.querySelectorAll(query));
+}
+
+/**
+ * Verifies that the URL is correct to avoid useless executions
+ * @returns void
+ */
 function verifyUrl() {
   const currentURL = location.pathname;
 
@@ -77,12 +123,85 @@ function verifyUrl() {
 }
 verifyUrl();
 
+/**
+ * Retrieves all the useful infos such as:
+ * - The user's full name
+ * - The title of the project
+ * - The current date thanks to the function {@link getDate()}
+ *
+ * @returns  An object with all these infos
+ */
+function getAllUsefulInfos() {
+  /**
+   * Title of the project
+   */
+  const mainHeadingElement = selectQuery("h1");
+
+  let mainHeadingText = getInnerText(mainHeadingElement);
+
+  if (!mainHeadingText) {
+    return {
+      title: null,
+      formattedName: null,
+      date: null,
+    };
+  }
+
+  mainHeadingText = replaceText(mainHeadingText, " ", "_");
+
+  /**
+   * Button to open a dropdown menu with user's settings
+   */
+  const button = selectQuery("[data-testid='mainHeaderAvatar']");
+  button.click(); //We click the button to open it
+
+  //User full name
+  const nameOfStudentElement = selectQuery("span.MuiTypography-root>strong");
+
+  let formattedNameOfStudent = getInnerText(nameOfStudentElement);
+  formattedNameOfStudent = replaceText(formattedNameOfStudent, " ", "_");
+
+  //We click the button again to close it
+  setTimeout(() => {
+    button.click();
+  }, 0);
+
+  /**
+   * New title of the project with the name of the project and the full name of the user
+   */
+  const actualTitleOfProject = `${formatText(
+    mainHeadingText,
+    "titlecase"
+  )}_${formatText(formattedNameOfStudent, "lowercase")}`;
+  /**
+   * Current date
+   */
+  const currentDate = getDate();
+
+  return {
+    title: actualTitleOfProject,
+    formattedName: formattedNameOfStudent,
+    date: currentDate,
+  };
+}
+
 let calls = 0;
+/**
+ * Function that sets the new value for the liverable names
+ *
+ * @param timeout Amount of milliseconds
+ */
 function setDeliverablesName(timeout) {
   setTimeout(() => {
-    const unorderedList = document.querySelector(
-      `aside[data-claire-semantic="information"] > ul`
+    const arrayOfAsides = selectQueryAll(
+      `aside[data-claire-semantic='information']`
     );
+
+    const liverablesAside = arrayOfAsides.filter((aside) => {
+      return aside.textContent.includes("Dupont_Jean");
+    });
+
+    console.log({ liverablesAside });
 
     if (calls >= 10) {
       console.log(
@@ -92,80 +211,44 @@ function setDeliverablesName(timeout) {
       return;
     }
 
-    if (!unorderedList) {
+    if (!liverablesAside) {
       console.log(
-        "%cThe script DID NOT work, couldn't retrieve the unordered list! Calling the function back again in 500ms",
+        "%cThe script DID NOT work, couldn't retrieve the <aside> element! Calling the function back again in 500ms",
         "padding:5px; font-size: 24px; background-color: red; color:white;"
       );
       let newTimeout = 500; //The timeout is always in milliseconds
       calls++;
       return setDeliverablesName(newTimeout);
     }
-    const listItems = Array.from(unorderedList.children);
-    /*
-      const unorderedList = document.querySelector("aside > ul");
-      const listItems = Array.from(unorderedList.children);
-    */
 
     console.log(
       "%cThe script is executing",
       "padding:5px; font-size: 24px; background: blue; color:white;"
     );
 
-    const mainHeadingElement = document.querySelector("h1");
+    /**
+     * All the useful infos
+     */
+    const { title, formattedName, date } = getAllUsefulInfos();
 
-    let mainHeadingText = getInnerText(mainHeadingElement);
+    const infosAreMissing = !title || !formattedName || !date;
 
-    if (!mainHeadingText) {
+    if (infosAreMissing) {
       console.log(
-        "%cThe script DID NOT work, couldn't retrieve the title of the project! Calling the function back again in 100ms",
+        "%cThe script DID NOT work, couldn't retrieve all the useful informations of the project! Calling the function back again in 100ms",
         "padding:5px; font-size: 24px; background-color: red; color:white;"
       );
       let newTimeout = 500; //The timeout is always in milliseconds
       calls++;
       return setDeliverablesName(newTimeout);
-    }
-    mainHeadingText = replaceText(mainHeadingText, " ", "_");
-
-    const titleOfProjectInAsideElement = document.querySelector("p>strong>em");
-    let textOfAside = getInnerText(titleOfProjectInAsideElement);
-
-    const button = document.querySelector("[data-testid='mainHeaderAvatar']");
-    button.click(); //We click the button to open it
-
-    const nameOfStudentElement = document.querySelector("span>strong");
-
-    let nameOfStudent = getInnerText(nameOfStudentElement);
-    nameOfStudent = replaceText(nameOfStudent, " ", "_");
-
-    const actualTitleOfProject = `${formatText(
-      mainHeadingText,
-      "titlecase"
-    )}_${formatText(nameOfStudent, "lowercase")}`;
-
-    titleOfProjectInAsideElement.textContent = replaceText(
-      textOfAside,
-      textOfAside,
-      actualTitleOfProject
-    );
-
-    const newDate = getDate();
-
-    setTimeout(() => {
-      button.click(); //We click it again to close it
-    }, 0);
-
-    for (let i = 0; i < listItems.length; i++) {
-      const item = listItems[i];
-      item.setAttribute("style", "font-style: italic");
-
-      item.textContent = replaceText(
-        item.textContent,
-        "Nom_Prénom",
-        nameOfStudent
+    } else {
+      console.log(
+        "%cSuccessfully retrieved all the useful infos!",
+        "padding:5px; font-size: 24px; background: darkblue; color:white;"
       );
-      item.textContent = replaceText(item.textContent, "mmaaaa", newDate);
+      log(title, formattedName, date);
     }
+
     console.log(
       "%cThe script worked!",
       "padding:5px; font-size: 24px; background: green; color:white;"
