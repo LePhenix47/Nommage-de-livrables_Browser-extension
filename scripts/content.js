@@ -5,7 +5,10 @@
  * @returns void
  */
 function log(...messages) {
-  return console.log(messages);
+  for (let i = 0; i < messages.length; i++) {
+    const message = messages[i];
+    console.log(message);
+  }
 }
 
 console.log(
@@ -14,7 +17,7 @@ console.log(
 );
 
 /**
- * Gets the current date in this format: *mmYYYY*
+ * Gets the current date with the month and the year in this format: *mmYYYY*
  *
  * ex: `022023`
  * @returns Date
@@ -86,10 +89,10 @@ function formatText(string, typeOfFormatting) {
  * @returns The element selected *or* `null` if the element doesn't exist
  */
 function selectQuery(query, container) {
-  if (!container) {
-    return document.querySelector(query);
+  if (container) {
+    return container.querySelector(query);
   }
-  return container.querySelector(query);
+  return document.querySelector(query);
 }
 
 /**
@@ -100,10 +103,21 @@ function selectQuery(query, container) {
  * @returns An array with all the elements selected *or* `null` if the element doesn't exist
  */
 function selectQueryAll(query, container) {
-  if (!container) {
-    return Array.from(document.querySelectorAll(query));
+  if (container) {
+    return Array.from(container.querySelectorAll(query));
   }
-  return Array.from(container.querySelectorAll(query));
+  return Array.from(document.querySelectorAll(query));
+}
+
+/**
+ * Function that selects all the children of an HTML element
+ *
+ * @param  element HTML element with children
+ * @returns Array with all the children of the element
+ */
+function getChildNodes(element) {
+  log({ element });
+  return Array.from(element.childNodes);
 }
 
 /**
@@ -141,7 +155,7 @@ function getAllUsefulInfos() {
 
   if (!mainHeadingText) {
     return {
-      title: null,
+      formattedTitle: null,
       formattedName: null,
       date: null,
     };
@@ -161,7 +175,7 @@ function getAllUsefulInfos() {
   let formattedNameOfStudent = getInnerText(nameOfStudentElement);
   formattedNameOfStudent = replaceText(formattedNameOfStudent, " ", "_");
 
-  //We click the button again to close it
+  //We click the button again to close it asynchronously
   setTimeout(() => {
     button.click();
   }, 0);
@@ -179,13 +193,17 @@ function getAllUsefulInfos() {
   const currentDate = getDate();
 
   return {
-    title: actualTitleOfProject,
+    formattedTitle: actualTitleOfProject,
     formattedName: formattedNameOfStudent,
     date: currentDate,
   };
 }
 
+/**
+ * Number of calls made by the {@link setDeliverablesName()} function
+ */
 let calls = 0;
+
 /**
  * Function that sets the new value for the liverable names
  *
@@ -193,62 +211,88 @@ let calls = 0;
  */
 function setDeliverablesName(timeout) {
   setTimeout(() => {
-    const arrayOfAsides = selectQueryAll(
-      `aside[data-claire-semantic='information']`
-    );
-
-    const liverablesAside = arrayOfAsides.filter((aside) => {
-      return aside.textContent.includes("Dupont_Jean");
-    });
-
-    console.log({ liverablesAside });
-
-    if (calls >= 10) {
+    const MAX_CALLSTACK_EXCEEDED = calls > 10;
+    if (MAX_CALLSTACK_EXCEEDED) {
       console.log(
-        "%cMax calling stack exceeded, the script will stop to avoid infinite loops, please reload the page",
+        "%cMax calling stack exceeded (10 calls MAX), the script will stop to avoid infinite loops, please reload the page",
         "padding:5px; font-size: 24px; background-color: red; color:white;"
       );
       return;
     }
+    /**
+     * All the `<aside>` in the page
+     */
+    const arrayOfAsides = selectQueryAll(
+      `aside[data-claire-semantic='information']`
+    );
 
-    if (!liverablesAside) {
+    //We get the correct one
+    const liverablesAside = arrayOfAsides.filter((aside) => {
+      const isLiverableAside = aside.textContent.includes("Dupont_Jean");
+      if (isLiverableAside) {
+        return aside;
+      }
+    })?.[0];
+
+    const WANTED_ASIDE_NOT_FOUND = !liverablesAside;
+
+    if (WANTED_ASIDE_NOT_FOUND) {
       console.log(
-        "%cThe script DID NOT work, couldn't retrieve the <aside> element! Calling the function back again in 500ms",
+        "%cThe script DID NOT work, couldn't retrieve the correct aside element! Calling the function back again in 500ms",
         "padding:5px; font-size: 24px; background-color: red; color:white;"
       );
-      let newTimeout = 500; //The timeout is always in milliseconds
+      let newTimeout = 500; //Timeout in milliseconds
+      calls++;
+      return setDeliverablesName(newTimeout);
+    }
+
+    //p
+    let titleOfLiverables = selectQuery("strong>em", liverablesAside);
+
+    //ul
+    let listForLiverables = selectQueryAll("ul>li", liverablesAside);
+
+    log(titleOfLiverables, listForLiverables);
+
+    /**
+     * All the useful infos
+     */
+    const { formattedTitle, formattedName, date } = getAllUsefulInfos();
+
+    const INFOS_ARE_MISSING = !formattedTitle || !formattedName || !date;
+
+    if (INFOS_ARE_MISSING) {
+      console.log(
+        "%cThe script DID NOT work, couldn't retrieve all the useful informations of the project! Calling the function back again in 500ms",
+        "padding:5px; font-size: 24px; background-color: red; color:white;"
+      );
+      let newTimeout = 500; //Timeout in milliseconds
       calls++;
       return setDeliverablesName(newTimeout);
     }
 
     console.log(
-      "%cThe script is executing",
-      "padding:5px; font-size: 24px; background: blue; color:white;"
+      "%cSuccessfully retrieved all the useful infos!",
+      "padding:5px; font-size: 24px; background: darkblue; color:white;"
     );
+    log({ formattedTitle }, { formattedName }, { date });
 
-    /**
-     * All the useful infos
-     */
-    const { title, formattedName, date } = getAllUsefulInfos();
+    //We change the name of the title inside the aside element
+    titleOfLiverables.textContent = formattedTitle;
 
-    const infosAreMissing = !title || !formattedName || !date;
+    //We change the name of the variables
+    for (item of listForLiverables) {
+      //We replace the name
+      let nameOfItem = item.textContent;
+      item.textContent = replaceText(nameOfItem, "Nom_Prénom", formattedName);
 
-    if (infosAreMissing) {
-      console.log(
-        "%cThe script DID NOT work, couldn't retrieve all the useful informations of the project! Calling the function back again in 100ms",
-        "padding:5px; font-size: 24px; background-color: red; color:white;"
-      );
-      let newTimeout = 500; //The timeout is always in milliseconds
-      calls++;
-      return setDeliverablesName(newTimeout);
-    } else {
-      console.log(
-        "%cSuccessfully retrieved all the useful infos!",
-        "padding:5px; font-size: 24px; background: darkblue; color:white;"
-      );
-      log(title, formattedName, date);
+      //We replace teh date
+      nameOfItem = item.textContent;
+      item.textContent = replaceText(nameOfItem, "mmaaaa", date);
+
+      //We make the text italic
+      item.style.fontStyle = "italic";
     }
-
     console.log(
       "%cThe script worked!",
       "padding:5px; font-size: 24px; background: green; color:white;"
