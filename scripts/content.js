@@ -7,7 +7,7 @@
 function log(...messages) {
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
-    console.log(message);
+    console.log(i, message);
   }
 }
 
