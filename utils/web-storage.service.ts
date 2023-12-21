@@ -85,6 +85,48 @@ class WebStorageService {
 
     return Boolean(item) ? item : null;
   }
+
+  /**
+   * Replacer function used as a callback for the `JSON.stringify` method to customize the serialization of certain types of objects,
+   * specifically for the Maps and Sets
+   *
+   * @param key - The key of the object being serialized.
+   * @param value - The value of the object being serialized.
+   * @returns The serialized representation of the value object with customized serialization for Map and Set objects.
+   * @see {@link https://www.builder.io/blog/maps Steve's article on Maps}
+   */
+  private static replacer(key: string, value: any): any {
+    if (value instanceof Map) {
+      return { __type: "Map", value: Object.fromEntries(value) };
+    }
+    if (value instanceof Set) {
+      return { __type: "Set", value: Array.from(value) };
+    }
+    return value;
+  }
+
+  /**
+   * Replacer function used as a callback for the `JSON.parse` method to customize the serialization of certain types of objects,
+   * specifically for the Maps and Sets
+   *
+   * @param key - The key of the object being serialized.
+   * @param value - The value of the object being serialized.
+   * @returns The serialized representation of the value object with customized serialization for Map and Set objects.
+   * @see {@link https://www.builder.io/blog/maps Steve's article on Maps}
+   */
+  private static reviver(key: string, value: any): any {
+    switch (value?.__type) {
+      case "Set": {
+        return new Set(value?.value);
+      }
+      case "Map": {
+        return new Set(value?.value);
+      }
+
+      default:
+        return value;
+    }
+  }
 }
 
 export default WebStorageService;
