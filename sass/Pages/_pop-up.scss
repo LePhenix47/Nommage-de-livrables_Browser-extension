@@ -4,7 +4,7 @@
     min-width: 180px;
     aspect-ratio: 2/1;
 
-    @include center-flex(25px);
+    @include center-flex-column(25px);
 
     &__link {
         text-align: center;
@@ -16,5 +16,9 @@
     &__image {
         aspect-ratio: 1/1;
         height: 16px;
+
+        &.invert {
+            filter: invert(100%) hue-rotate(180deg)
+        }
     }
 }
