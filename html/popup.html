@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Meta tags-->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="description" content="Bienvenue sur le Pop-up!">
+  <meta name="color-scheme" content="dark light" />
+  <meta name="robots" content="index, follow">
+
+  <!-- Title -->
+  <title>Pop-up de l'extension</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../dist/style.css" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=DM+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet">
+
+
+
+  <!-- Icons -->
+  <script script-src-elem="https://kit.fontawesome.com/904e9ee361.js" crossorigin="anonymous"></script>
+
+  <!-- Page logo -->
+  <link rel="icon" type="image/png" href="assets/logos/icon-logo.png" />
+
+  <!-- JS -->
+  <script type="importmap">
+        {
+          "imports": {
+            "@css/": "./css/",
+            "@images/": "./images/",
+            "@scripts/": "./scripts/",
+            "@sass/": "./sass/",
+            "@utils/": "./utils/"
+          }
+        }
+      </script>
+  <script defer src="../dist/popup.js"></script>
+</head>
+
+<body>
+  <main class="pop-up">
+
+    <form>
+      <!-- Your form inputs go here -->
+      <label>First name:
+        <input type="text" />
+      </label>
+      <label>Last name:
+        <input type="text" />
+      </label>
+      <label>Date:
+        <input type="date" />
+      </label>
+
+      <!-- Add other form inputs as needed -->
+      <button type="submit">Submit</button>
+    </form>
+
+
+    <a href="https://github.com/LePhenix47/Nommage-de-livrables_Browser-extension" target="_blank" class="pop-up__link">
+      <img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg"
+        class="pop-up__image" /> Voir le code source?
+    </a>
+  </main>
+</body>
+
+</html>

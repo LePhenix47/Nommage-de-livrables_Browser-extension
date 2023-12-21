@@ -11,7 +11,7 @@
   "options_page": "html/options.html",
   "action": {
     "default_icon": "images/Logo_deliverables-48.png",
-    "default_popup": "html/pop-up.html"
+    "default_popup": "html/popup.html"
   },
   "content_scripts": [
     {

@@ -4,7 +4,8 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   entry: {
-    index: "./scripts/content.ts", // Entry point for your TypeScript files
+    content: "./scripts/content.ts", // Entry point for your TypeScript files
+    popup: "./scripts/popup.ts", // Script output for the popup.html
     style: "./sass/main.scss", // Entry point for your SASS file
   },
   mode: "production",
