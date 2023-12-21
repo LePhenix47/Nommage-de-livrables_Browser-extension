@@ -32,7 +32,18 @@
     <link rel="icon" type="image/png" href="assets/logos/icon-logo.png" />
 
     <!-- JS -->
-
+    <script type="importmap">
+        {
+          "imports": {
+            "@css/": "./css/",
+            "@images/": "./images/",
+            "@scripts/": "./scripts/",
+            "@sass/": "./sass/",
+            "@utils/": "./utils/"
+          }
+        }
+      </script>
+    <script defer src="../dist/index.js"></script>
 </head>
 
 <body>

@@ -223,7 +223,7 @@ function setDeliverablesName(timeout) {
      * All the `<aside>` in the page
      */
     const arrayOfAsides = selectQueryAll(
-      `aside[data-claire-semantic='information']`
+      `aside[data-claire-semantic="information"]`
     );
 
     //We get the correct one
