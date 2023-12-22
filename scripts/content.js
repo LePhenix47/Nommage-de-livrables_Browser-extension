@@ -262,10 +262,6 @@ function setDeliverablesName(timeout) {
     const INFOS_ARE_MISSING = !formattedTitle || !formattedName || !date;
 
     if (INFOS_ARE_MISSING) {
-      console.log(
-        "%cThe script DID NOT work, couldn't retrieve all the useful informations of the project! Calling the function back again in 500ms",
-        "padding:5px; font-size: 24px; background-color: red; color:white;"
-      );
       let newTimeout = 500; //Timeout in milliseconds
       calls++;
       return setDeliverablesName(newTimeout);
@@ -293,10 +289,6 @@ function setDeliverablesName(timeout) {
       //We make the text italic
       item.style.fontStyle = "italic";
     }
-    console.log(
-      "%cThe script worked!",
-      "padding:5px; font-size: 24px; background: green; color:white;"
-    );
   }, timeout);
 }
 

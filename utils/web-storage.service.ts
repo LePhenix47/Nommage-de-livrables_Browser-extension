@@ -120,7 +120,7 @@ class WebStorageService {
         return new Set(value?.value);
       }
       case "Map": {
-        return new Set(value?.value);
+        return new Map(value?.value);
       }
 
       default:

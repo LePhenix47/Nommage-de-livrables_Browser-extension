@@ -6,9 +6,15 @@
 
     @include center-flex-column(25px);
 
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
     &__link {
         text-align: center;
-        background-color: rgb(24, 24, 24);
+        background-color: var(--bg-secondary);
         padding: 5px;
         border-radius: 100vmax;
     }
@@ -16,9 +22,5 @@
     &__image {
         aspect-ratio: 1/1;
         height: 16px;
-
-        &.invert {
-            filter: invert(100%) hue-rotate(180deg)
-        }
     }
 }

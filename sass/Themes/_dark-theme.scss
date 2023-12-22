@@ -1,11 +1,13 @@
 @use "../Utils/" as *;
 
 @media (prefers-color-scheme: dark) {
-    //SASS variables
-    $body-bg-color: black;
-
-    //CSS variables
     :root {
-        --body-bg-color:#{$body-bg-color};
+        --body-bg-color: black;
+        --bg-secondary: #181818;
+    }
+
+
+    .pop-up__image {
+        filter: invert(100%) hue-rotate(180deg)
     }
 }
