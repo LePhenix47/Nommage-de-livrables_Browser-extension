@@ -177,13 +177,18 @@ function setDeliverablesName() {
   const MAX_CALLSTACK: number = 15;
   let calls: number = 0;
 
-  startScript(3_000);
+  startScript();
   console.log(
     "%cThe script started!",
     "padding:5px; font-size: 16px; background: darkblue; color:white;"
   );
 
-  function startScript(timeout: number) {
+  function startScript(timeout: number = 0) {
+    const ocSpinnerPage = selectQuery<HTMLDivElement>("div.oc-spinnerPage");
+    if (ocSpinnerPage) {
+      startScript(timeout);
+    }
+
     const MAX_CALLSTACK_EXCEEDED: boolean = calls >= MAX_CALLSTACK;
     if (MAX_CALLSTACK_EXCEEDED) {
       console.log(
