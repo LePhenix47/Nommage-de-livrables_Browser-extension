@@ -1,5 +1,7 @@
 import { selectQuery, selectQueryAll } from "@utils/dom.helpers";
+import { valuesToBeRetrieved } from "@utils/variables";
 import WebStorageService from "@utils/web-storage.service";
+declare const chrome: any;
 
 /**
  * Retrieves the formatted project title by selecting the main heading element and replacing all spaces with underscores.
@@ -14,6 +16,10 @@ import WebStorageService from "@utils/web-storage.service";
  */
 function getFormattedProjectTitle(): string {
   const mainHeadingElement = selectQuery<HTMLHeadingElement>("h1");
+
+  if (!mainHeadingElement) {
+    throw new Error("No h1 element found");
+  }
 
   const formattedTitle: string = mainHeadingElement.innerText.replaceAll(
     " ",
@@ -35,19 +41,15 @@ function getFormattedProjectTitle(): string {
  * // Output: Map { "first-name" => "John", "last-name" => "Doe", "date" => "2022-01" }
  * ```
  */
-function getFromLocalStorageFormattedInfo(): Map<string, string> {
-  const valuesToBeRetrieved = [
-    "ndl-extension_first-name",
-    "ndl-extension_last-name",
-    "ndl-extension_date",
-  ] as const;
-
+async function getFromLocalStorageFormattedInfo(): Promise<
+  Map<string, string>
+> {
   const valuesMap = new Map<string, string>();
 
   for (const value of valuesToBeRetrieved) {
     const realValue: string = value.split("_")[1];
 
-    const valueOnLocalStorage: string = WebStorageService.getKey<string>(value);
+    const valueOnLocalStorage: string = await chrome.storage.sync.get(value);
 
     if (!valueOnLocalStorage) {
       throw new Error(`${realValue} does not exist on local storage`);
@@ -55,7 +57,8 @@ function getFromLocalStorageFormattedInfo(): Map<string, string> {
 
     switch (realValue) {
       case "date": {
-        const formattedDate: string = new Date(valueOnLocalStorage)
+        //@ts-ignore
+        const formattedDate: string = new Date(valueOnLocalStorage?.ndl_date)
           .toLocaleString("fr-FR", {
             year: "numeric",
             month: "2-digit",
@@ -67,7 +70,7 @@ function getFromLocalStorageFormattedInfo(): Map<string, string> {
       }
 
       default: {
-        valuesMap.set(realValue, valueOnLocalStorage);
+        valuesMap.set(realValue, valueOnLocalStorage[value]);
         break;
       }
     }
@@ -113,7 +116,9 @@ function getElementsToModify(): Map<string, HTMLElement[]> {
   const listItemsOfUList = selectQueryAll<HTMLLIElement>("li", unorderedList);
 
   if (!unorderedList || !listItemsOfUList) {
-    throw new Error("Child elements to be updated not found");
+    throw new Error(
+      "Child elements to be updated (<ul> or array of <li>s) not found"
+    );
   }
 
   const elementsMap = new Map<string, HTMLElement[]>();
@@ -127,37 +132,44 @@ function getElementsToModify(): Map<string, HTMLElement[]> {
  * Modifies specific elements in the `<aside>` for the deliverables
  *
  */
-function modifyElements(): void {
+async function modifyElements(): Promise<void> {
   const elementToModifyMap: Map<string, HTMLElement[]> = getElementsToModify();
 
-  const formattedTitle: string = getFormattedProjectTitle();
-  const titleElement: HTMLElement = elementToModifyMap.get("title")[0];
-  titleElement.textContent = formattedTitle;
-
   const studentInfoMap: Map<string, string> =
-    getFromLocalStorageFormattedInfo();
+    await getFromLocalStorageFormattedInfo();
+
+  console.log(studentInfoMap);
 
   const studentFullName: string = `${studentInfoMap.get(
-    "last-name"
-  )}_${studentInfoMap.get("first-name")}`;
+    "lastName"
+  )}_${studentInfoMap.get("firstName")}`;
+
+  const formattedTitle: string = `${getFormattedProjectTitle()}_${studentFullName}`;
+
+  const emElementForTitle: HTMLElement = document.createElement<"em">("em");
+  const titleElement: HTMLElement = elementToModifyMap.get("title")[0];
+  emElementForTitle.textContent = formattedTitle;
+  titleElement.innerHTML = "";
+  // Append the <em> element to the end of the <li>
+  titleElement.appendChild(emElementForTitle);
 
   const listItemsArray: HTMLElement[] = elementToModifyMap.get("list-items");
 
   const formattedDate: string = studentInfoMap.get("date");
   for (const listItem of listItemsArray) {
-    const [deliverableNameEm, monthYearEm] = Array.from(listItem.children);
+    // Create a new <em> element
+    const emElementForLI: HTMLElement = document.createElement<"em">("em");
 
-    if (studentFullName) {
-      deliverableNameEm.textContent = (
-        deliverableNameEm as HTMLParagraphElement
-      ).innerText.replaceAll("Nom_Prénom", studentFullName);
-    }
+    const formattedTextForEmphase: string = listItem.innerText
+      .replaceAll("Nom_Prénom", studentFullName)
+      .replaceAll("mmaaaa", formattedDate);
 
-    if (formattedDate) {
-      monthYearEm.textContent = (
-        monthYearEm as HTMLParagraphElement
-      ).innerText.replaceAll("mmaaaa", formattedDate);
-    }
+    listItem.innerHTML = "";
+
+    emElementForLI.textContent = formattedTextForEmphase;
+
+    // Append the <em> element to the end of the <li>
+    listItem.appendChild(emElementForLI);
   }
 }
 
@@ -165,21 +177,29 @@ function setDeliverablesName() {
   const MAX_CALLSTACK: number = 15;
   let calls: number = 0;
 
-  const MAX_CALLSTACK_EXCEEDED = calls > MAX_CALLSTACK;
-  if (MAX_CALLSTACK_EXCEEDED) {
-    console.log(
-      "%cMax calling stack exceeded (10 calls MAX), the script will stop to avoid infinite loops, please reload the page",
-      "padding:5px; font-size: 16px; background-color: red; color:white;"
-    );
-    return;
-  }
-
   startScript(3_000);
+  console.log(
+    "%cThe script started!",
+    "padding:5px; font-size: 16px; background: darkblue; color:white;"
+  );
 
   function startScript(timeout: number) {
-    setTimeout(() => {
+    const MAX_CALLSTACK_EXCEEDED: boolean = calls >= MAX_CALLSTACK;
+    if (MAX_CALLSTACK_EXCEEDED) {
+      console.log(
+        `%cMax call stack exceeded (${MAX_CALLSTACK} calls MAX), the script will stop to avoid infinite loops, please reload the page to restart the script`,
+        "padding:5px; font-size: 16px; background-color: red; color:white;"
+      );
+      return;
+    }
+
+    setTimeout(async () => {
       try {
-        modifyElements();
+        await modifyElements();
+        console.log(
+          "%cThe script worked!",
+          "padding:5px; font-size: 16px; background: green; color:white;"
+        );
         return;
       } catch (error) {
         console.log(
@@ -191,11 +211,6 @@ function setDeliverablesName() {
       }
     }, timeout);
   }
-
-  console.log(
-    "%cThe script worked!",
-    "padding:5px; font-size: 24px; background: green; color:white;"
-  );
 }
 setDeliverablesName();
 

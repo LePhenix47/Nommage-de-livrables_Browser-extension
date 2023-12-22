@@ -1,50 +1,47 @@
 import { selectQuery, selectQueryAll } from "@utils/dom.helpers";
-import WebStorageService from "@utils/web-storage.service";
+import { valuesToBeRetrieved } from "@utils/variables";
 
+declare const chrome: any;
 const form = selectQuery<HTMLFormElement>("form");
 const inputsArray = selectQueryAll<HTMLInputElement>("input");
 
 form.addEventListener("submit", (e: SubmitEvent) => {
   e.preventDefault();
 
-  for (const input of inputsArray) {
-    WebStorageService.setKey(
-      `ndl-extension_${input.id}`,
-      input.type === "text" ? input.value : input.valueAsDate
-    );
-  }
-  //    chrome.runtime.sendMessage({ type: 'formSubmission', data: formData });
+  // Create an object to store the values
+  const valuesToBeStored = {
+    ndl_firstName: inputsArray[0].value,
+    ndl_lastName: inputsArray[1].value,
+    ndl_date: inputsArray[2].value,
+  };
+
+  // Save input values to chrome.storage.sync
+  chrome.storage.sync.set(valuesToBeStored, () => {
+    console.log("Values saved to chrome.storage.sync:", valuesToBeStored);
+  });
+
+  // Send a message to background.js to inform about the setValues action
+  chrome.runtime.sendMessage({
+    type: "setValues",
+    data: valuesToBeStored,
+  });
 });
-
-function populateInputs(): void {
-  const valuesToBeRetrieved = [
-    "ndl-extension_first-name",
-    "ndl-extension_last-name",
-    "ndl-extension_date",
-  ] as const;
-
+async function populateInputs(): Promise<void> {
+  // Retrieve values from chrome.storage.sync and populate inputs
   for (let i = 0; i < valuesToBeRetrieved.length; i++) {
-    const savedValue: (typeof valuesToBeRetrieved)[number] =
-      WebStorageService.getKey(valuesToBeRetrieved[i]);
+    const key = valuesToBeRetrieved[i];
 
-    const input: HTMLInputElement = inputsArray[i];
+    // Use chrome.storage.sync.get to retrieve data
+    await chrome.storage.sync.get(key, (result) => {
+      const savedValue = result[key];
 
-    switch (input.type) {
-      case "number": {
-        input.valueAsNumber = Number(savedValue);
-        break;
-      }
-      case "date": {
-        input.valueAsDate = new Date(savedValue);
-        break;
-      }
-
-      default:
-        input.value = savedValue;
-        break;
-    }
+      const input: HTMLInputElement = inputsArray[i];
+      input.value = savedValue;
+    });
   }
 }
+
+// Call populateInputs to load saved values on page load
 populateInputs();
 
 console.log("Hello popup.ts", form);

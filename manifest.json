@@ -8,10 +8,15 @@
     "48": "images/Logo_deliverables-48.png",
     "128": "images/Logo_deliverables-128.png"
   },
+  "permissions": ["storage", "tabs", "activeTab"],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
   "options_page": "html/options.html",
   "action": {
     "default_icon": "images/Logo_deliverables-48.png",
-    "default_popup": "html/popup.html"
+    "default_popup": "html/popup.html",
+    "default_title": "Nommage des livrables"
   },
   "content_scripts": [
     {
