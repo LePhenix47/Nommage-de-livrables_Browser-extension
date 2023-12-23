@@ -173,7 +173,12 @@ async function modifyElements(): Promise<void> {
   }
 }
 
-function setDeliverablesName() {
+/**
+ * Modifies elements on a webpage by calling the `modifyElements` function.
+ * If an error occurs during the modification process, the script retries after a delay.
+ * The script stops if the maximum number of retries is reached or if the loading spinner is still present after multiple attempts.
+ */
+function setDeliverablesName(): void {
   const MAX_CALLSTACK: number = 15;
   let calls: number = 0;
 
